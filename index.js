@@ -10,6 +10,7 @@ var session_mongoStore = require('connect-mongo')(session);
 var mongo = require('mongodb').MongoClient;
 var co = require('co');
 
+var controller_api = require('./controllers/api');
 var controller_places = require('./controllers/places');
 
 var myApp = express();
@@ -20,7 +21,8 @@ myApp.use(session({
   resave: false,
   saveUninitialized: false
 }));
-myApp.use('/static', express.static(__dirname + '/static'))
+myApp.use('/static', express.static(__dirname + '/static'));
+myApp.use('/api', controller_api);
 myApp.use('/places', controller_places);
 passport.use(new passport_twitter(
   config.twitterAuth,
@@ -35,6 +37,11 @@ myApp.get('/auth', passport.authenticate('twitter'));
 myApp.get('/auth/cb', passport.authenticate('twitter', {failureRedirect: '/error'}),
   function(req, res) {
     res.redirect('/');
+});
+myApp.get('/', function(req, res) {
+  req.session.user = req.user;
+  // TODO: Show the main page once the front end is added.
+  res.end();
 });
 
 myApp.listen(process.env.PORT || 8080);
