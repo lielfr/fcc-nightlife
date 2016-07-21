@@ -10,9 +10,15 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "co": "^4.6.0",
+    "connect-mongo": "^1.2.1",
     "csurf": "^1.9.0",
     "express": "^4.14.0",
+    "express-session": "^1.14.0",
     "helmet": "^2.1.1",
-    "pug": "^2.0.0-beta3"
+    "passport": "^0.3.2",
+    "passport-twitter": "^1.0.4",
+    "pug": "^2.0.0-beta3",
+    "request-promise": "^3.0.0"
   }
 }
