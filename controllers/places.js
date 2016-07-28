@@ -14,23 +14,24 @@ function placesMongoMiddleware(req, res, next) {
 
 var places = express.Router();
 places.use(placesMongoMiddleware);
-places.post('/:placeID/:action', function(req, res) {
+places.get('/:action', function(req, res) {
   co(function* () {
-    var collection = req.mongo.collection('accomodations');
+    var accomodations = req.mongo.collection('accomodations');
+    var rating = req.mongo.collection('rating');
     // Get rid of previous accomodations unless they were made today.
-    yield collection.deleteMany({
+    yield accomodations.deleteMany({
       uid: req.session.user.id,
       date: {$neq: utils.currentDate}
     });
     switch(req.params.action) {
       case 'go':
-        yield collection.findAndModify(
-          {uid: req.session.user.id, place_id: req.params.placeID},
+        yield accomodations.findAndModify(
+          {uid: req.session.user.id, place_id: req.query.placeID},
           [],
           {
             $setOnInsert: {
               uid: req.session.user.id,
-              place_id: req.params.placeID,
+              place_id: req.query.placeID,
               date: utils.currentDate()
             }
           },
@@ -39,8 +40,8 @@ places.post('/:placeID/:action', function(req, res) {
         utils.apiSuccess(req, res, 'Marked successfully.');
       break;
       case 'delete':
-        var query = yield collection.deleteOne({
-          uid: req.session.user.id, place_id: req.params.placeID
+        var query = yield accomodations.deleteOne({
+          uid: req.session.user.id, place_id: req.query.placeID
         });
         if (query.result.n !== 1)
           utils.apiError(req, res, 'Could not delete the item.');
@@ -48,10 +49,34 @@ places.post('/:placeID/:action', function(req, res) {
           utils.apiSuccess(req, res, 'Successfully deleted.')
       break;
       case 'check':
-        var result = yield collection.find({
-          uid: req.session.user.id, place_id: req.params.placeID
+        var isGoing = yield accomodations.find({
+          uid: req.session.user.id, place_id: req.query.placeID
         }).toArray();
-        utils.apiSuccess(req, res, result.length==1?'Yes':'No');
+        var rank = yield rating.find({
+          uid: req.session.user.id, place_id: req.query.placeID
+        }).toArray();
+        var returnObj = {
+          isGoing: isGoing.length===1,
+          rank: rank.length===1? rank[0].rank : 0
+        };
+        utils.apiSuccess(req, res, returnObj);
+      break;
+      case 'rate':
+        if (!req.query.rank || req.query.rank.search(/^[1-5]$/g) < 0)
+          return utils.apiError(req, res, 'Invalid rank.');
+        yield rating.findAndModify(
+          {uid: req.session.user.id, place_id: req.query.placeID},
+          [],
+          {
+            $setOnInsert: {
+              uid: req.session.user.id,
+              place_id: req.query.placeID
+            },
+            $set: {rank: req.query.rank}
+          },
+          {new: true, upsert: true}
+        );
+        utils.apiSuccess(req, res, 'Rated successfully.');
     }
   }).catch(utils.onError);
 });

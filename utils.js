@@ -50,11 +50,11 @@ utils.apiError = function(req, res, errText) {
   res.end(JSON.stringify({status: 'error', msg: errText}));
 }
 
-utils.apiSuccess = function(req, res, statusText) {
+utils.apiSuccess = function(req, res, statusObj) {
   if (req.mongo)
     req.mongo.close();
   res.writeHead(200, {'Content-Type': 'text/json; charset=UTF-8'});
-  res.end(JSON.stringify({status: 'success', msg: statusText}));
+  res.end(JSON.stringify({status: 'success', msg: statusObj}));
 }
 
 module.exports = utils;
