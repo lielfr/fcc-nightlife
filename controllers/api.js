@@ -1,17 +1,20 @@
 var config = require('../config');
 var utils = require('../utils');
 var rp = require('request-promise');
+var body_parser = require('body-parser');
 var express = require('express');
 var co = require('co');
 
 var root = express.Router();
+root.use(body_parser.json());
+root.use(body_parser.urlencoded({extended: true}));
 
-root.get('/s/:query', function(req, res) {
+root.post('/s/', function(req, res) {
   var apiRequest = {
     uri: 'https://maps.googleapis.com/maps/api/place/textsearch/json',
     qs: {
       key: config.apiKey,
-      query: 'bars near ' + req.params.query
+      query: 'bars near ' + req.body.keyword
     },
     json: true
   };
@@ -24,18 +27,18 @@ root.get('/s/:query', function(req, res) {
         address: item.formatted_address
       };
       if (item.hasOwnProperty('photos'))
-        ret.photo = '/places/p/' + item.photos[0].photo_reference;
+        ret.photo = '/api/p/?ref=' + item.photos[0].photo_reference;
       return ret;
     })));
   }).catch(utils.onError);
 });
 
-root.get('/p/:ref', function(req, res) {
+root.get('/p/', function(req, res) {
   var apiRequest = {
     uri: 'https://maps.googleapis.com/maps/api/place/photo',
     qs: {
       key: config.apiKey,
-      photoreference: req.params.ref,
+      photoreference: req.query.ref,
       maxheight: 100
     },
     resolveWithFullResponse: true

@@ -9,11 +9,16 @@ var session = require('express-session');
 var session_mongoStore = require('connect-mongo')(session);
 var mongo = require('mongodb').MongoClient;
 var co = require('co');
+var pug = require('pug');
 
 var controller_api = require('./controllers/api');
 var controller_places = require('./controllers/places');
 
+var middleware_mongo = require('./middleware/mongo');
+
 var myApp = express();
+myApp.set('view engine', 'pug');
+myApp.set('views', './views');
 myApp.use(helmet());
 myApp.use(session({
   secret: config.sessionSecret,
@@ -38,10 +43,22 @@ myApp.get('/auth/cb', passport.authenticate('twitter', {failureRedirect: '/error
   function(req, res) {
     res.redirect('/');
 });
-myApp.get('/', function(req, res) {
-  req.session.user = req.user;
-  // TODO: Show the main page once the front end is added.
-  res.end();
+myApp.get('/', middleware_mongo, function(req, res) {
+  if (req.user)
+    req.session.user = req.user;
+  co(function* () {
+    var lastSearch;
+    if (req.session.user) {
+      var userProfile = yield req.mongo.users.find({
+        _id: req.session.user.id
+      }).toArray();
+      lastSearch = userProfile[0].lastSearch;
+    }
+    req.mongo.db.close();
+    res.render('index', {lastSearch: lastSearch});
+    res.end();
+  }).catch(utils.onError);
+
 });
 
 myApp.listen(process.env.PORT || 8080);
