@@ -43,19 +43,28 @@ myApp.get('/auth/cb', passport.authenticate('twitter', {failureRedirect: '/error
   function(req, res) {
     res.redirect('/');
 });
+myApp.get('/auth/logout', function(req, res) {
+  req.session.destroy();
+  res.redirect('/');
+  res.end();
+});
 myApp.get('/', middleware_mongo, function(req, res) {
   if (req.user)
     req.session.user = req.user;
   co(function* () {
-    var lastSearch;
+    var lastSearch, userName;
     if (req.session.user) {
       var userProfile = yield req.mongo.users.find({
         _id: req.session.user.id
       }).toArray();
       lastSearch = userProfile[0].lastSearch;
+      userName = userProfile[0].displayName;
     }
     req.mongo.db.close();
-    res.render('index', {lastSearch: lastSearch});
+    res.render('index', {
+      lastSearch: lastSearch,
+      userName: userName
+    });
     res.end();
   }).catch(utils.onError);
 

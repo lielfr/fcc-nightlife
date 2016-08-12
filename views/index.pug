@@ -6,6 +6,17 @@ block head
 
 block body
   div(class='jumbotron bg-primary place-search')
+    div(class='login-bar')
+      - var displayStr = userName?('Logged in as '+userName+'.'):'Not logged in.';
+      span #{displayStr}
+      if userName
+        a(class='btn btn-primary', href='/auth/logout', role='button')
+          i(class='fa fa-sign-out', aria-hidden='true')
+          | &nbsp;Log Out
+      else
+        a(class='btn btn-primary', href='/auth/', role='button')
+          i(class='fa fa-twitter', aria-hidden='true')
+          | &nbsp;Log In using Twitter
     h1(class='text-xs-center') Where do you want to go?
     form(method='post', id='search-form', class='form-inline', action='/api/s/')
       div(class='input-group')

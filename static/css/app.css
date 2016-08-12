@@ -66,3 +66,13 @@ body {
 .img-fsize {
   max-height: 100px;
 }
+
+.login-bar {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.login-bar span {
+  margin-right: 1em;
+}
