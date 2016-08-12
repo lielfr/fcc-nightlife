@@ -38,7 +38,7 @@ var GoingBox = React.createClass({
     }.bind(this));
   },
   render: function () {
-    var btnClassName = 'btn btn-success';
+    var btnClassName = 'btn btn-success btn-wrap';
     btnClassName += this.state.activeControls ? '' : 'btn-disabled';
     var iconClassName = this.state.obj.isGoing ? 'fa fa-check' : 'fa fa-hand-o-right';
     var adverb = this.state.obj.going !== 1 ? 'are' : 'is';
