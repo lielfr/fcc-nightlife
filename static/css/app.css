@@ -62,3 +62,7 @@ body {
 .flex-column {
   flex-direction: column;
 }
+
+.img-fsize {
+  max-height: 100px;
+}

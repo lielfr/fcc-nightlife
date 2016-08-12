@@ -4,7 +4,8 @@
   "description": "This is my solution for FCC's Nightlife Coordination App challenge. For  more information, please visit this link:  https://www.freecodecamp.com/challenges/build-a-nightlife-coordination-app.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "babel jsx -d static/js"
   },
   "keywords": [],
   "author": "",
@@ -21,5 +22,15 @@
     "passport-twitter": "^1.0.4",
     "pug": "^2.0.0-beta3",
     "request-promise": "^3.0.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.11.4",
+    "babel-preset-react": "^6.11.1"
+  },
+  "babel": {
+    "presets": [
+      "react"
+    ],
+    "plugins": []
   }
 }
