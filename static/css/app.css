@@ -21,6 +21,7 @@ body {
 
 .place-search h1 {
   text-shadow: 0 0 1em black;
+  margin-top: 0.2em;
 }
 
 .place-search .input-group {
@@ -75,4 +76,10 @@ body {
 
 .login-bar span {
   margin-right: 1em;
+}
+
+.login-bar .btn {
+  border-top-right-radius: 0;
+  border-top-left-radius: 0;
+  border-bottom-right-radius: 0;
 }

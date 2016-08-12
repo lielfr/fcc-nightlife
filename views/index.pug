@@ -19,6 +19,8 @@ block body
           | &nbsp;Log In using Twitter
     h1(class='text-xs-center') Where do you want to go?
     form(method='post', id='search-form', class='form-inline', action='/api/s/')
+      - var isLoggedIn = userName?'yes':'no';
+      input(type='hidden', id='isLoggedIn', value=isLoggedIn)
       div(class='input-group')
         - var currentSearch = lastSearch?lastSearch:'';
         input(class='form-control', type='text', name='keyword', value=currentSearch, placeHolder='Enter your location here.')

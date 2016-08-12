@@ -49,14 +49,28 @@ places.get('/:action', function(req, res) {
           utils.apiSuccess(req, res, 'Successfully deleted.')
       break;
       case 'check':
-        var isGoing = yield accomodations.find({
-          uid: req.session.user.id, place_id: req.query.placeID
+        var allGoing = yield accomodations.find({
+          place_id: req.query.placeID,
+          date: utils.currentDate
         }).toArray();
-        var rank = yield rating.find({
-          uid: req.session.user.id, place_id: req.query.placeID
+        var isGoing = allGoing.filter(function(item) {
+          return item.uid === req.session.user.id;
+        });
+        var allRankings = yield rating.find({
+          place_id: req.query.placeID
         }).toArray();
+        var sumRanks = 0;
+        allRankings.forEach(function(item) {
+          sumRanks += item.rank;
+        });
+        var avgRank = sumRanks / allRankings.length;
+        var rank = allRankings.filter(function(item) {
+          return item.uid === req.session.user.id;
+        });
         var returnObj = {
+          going: allGoing.length,
           isGoing: isGoing.length===1,
+          avgRank: avgRank,
           rank: rank.length===1? rank[0].rank : 0
         };
         utils.apiSuccess(req, res, returnObj);
