@@ -10,7 +10,10 @@ root.use(body_parser.json());
 root.use(body_parser.urlencoded({extended: true}));
 
 root.post('/s/', function(req, res) {
-  req.session.lastSearch = req.body.keyword;
+  if (!req.session.lastSearch)
+    req.session.lastSearch = req.body.keyword;
+  else
+    req.session.lastSearch = null;
   var apiRequest = {
     uri: 'https://maps.googleapis.com/maps/api/place/textsearch/json',
     qs: {
