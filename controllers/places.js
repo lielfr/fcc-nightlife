@@ -51,7 +51,7 @@ places.get('/:action', function(req, res) {
       case 'check':
         var allGoing = yield accomodations.find({
           place_id: req.query.placeID,
-          date: utils.currentDate
+          date: utils.currentDate()
         }).toArray();
         var isGoing = allGoing.filter(function(item) {
           return item.uid === req.session.user.id;

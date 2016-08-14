@@ -57,7 +57,7 @@ myApp.get('/', middleware_mongo, function(req, res) {
       var userProfile = yield req.mongo.users.find({
         _id: req.session.user.id
       }).toArray();
-      lastSearch = userProfile[0].lastSearch;
+      lastSearch = req.session.lastSearch;
       userName = userProfile[0].displayName;
     }
     req.mongo.db.close();

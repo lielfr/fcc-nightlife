@@ -24,7 +24,7 @@ var GoingBox = React.createClass({
   },
   onGoing: function() {
     // TODO: Implement an ajax call here.
-    var requestAction = this.state.isGoing?'delete':'go';
+    var requestAction = this.state.obj.isGoing?'delete':'go';
     var requestURL = '/places/' + requestAction + '?placeID=' + this.props.placeID;
     $.getJSON(requestURL, function(data) {
       if (data && data.status === 'success') {
@@ -106,15 +106,20 @@ function onSearchEnd(data, textStatus, jqXHR) {
   );
 }
 
-$(document).ready(function() {
-  $('#search-form').submit(function(event) {
+function onFormSubmit(event) {
+  if (event)
     event.preventDefault();
-    $.ajax({
-      type: 'POST',
-      url: $(this).attr('action'),
-      data: $(this).serialize(),
-      dataType: 'json',
-      success: onSearchEnd
-    });
+  $.ajax({
+    type: 'POST',
+    url: $('#search-form').attr('action'),
+    data: $('#search-form').serialize(),
+    dataType: 'json',
+    success: onSearchEnd
   });
+}
+
+$(document).ready(function() {
+  if ($('#keyword').attr('value') !== '')
+    onFormSubmit();
+  $('#search-form').submit(onFormSubmit);
 });

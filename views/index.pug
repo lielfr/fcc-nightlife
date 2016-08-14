@@ -23,7 +23,7 @@ block body
       input(type='hidden', id='isLoggedIn', value=isLoggedIn)
       div(class='input-group')
         - var currentSearch = lastSearch?lastSearch:'';
-        input(class='form-control', type='text', name='keyword', value=currentSearch, placeHolder='Enter your location here.')
+        input(class='form-control', type='text', name='keyword', id='keyword', value=currentSearch, placeHolder='Enter your location here.')
         span(class='input-group-btn')
           button(type='submit', class='btn btn-primary')
             i(class='fa fa-search', aria-hidden='true')
