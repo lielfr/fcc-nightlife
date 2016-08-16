@@ -3,6 +3,9 @@ var utils = require('../utils');
 var express = require('express');
 var co = require('co');
 var mongo = require('mongodb').MongoClient;
+var csurf = require('csurf');
+
+var csrfProtection = csurf({});
 
 function placesMongoMiddleware(req, res, next) {
   if (!req.session.user)
@@ -14,7 +17,7 @@ function placesMongoMiddleware(req, res, next) {
 
 var places = express.Router();
 places.use(placesMongoMiddleware);
-places.get('/:action', function(req, res) {
+places.get('/:action', csrfProtection, function(req, res) {
   co(function* () {
     var accomodations = req.mongo.collection('accomodations');
     var rating = req.mongo.collection('rating');

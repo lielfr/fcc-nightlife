@@ -12,7 +12,9 @@ var GoingBox = React.createClass({
   },
   componentDidMount: function () {
     var requestURL = '/places/check?placeID=' + this.props.placeID;
-    this.request = $.getJSON(requestURL, function (data) {
+    this.request = $.getJSON(requestURL, {
+      _csrf: $('#_csrf').attr('value')
+    }, function (data) {
       if (data && data.status === 'success') {
         this.setState({
           activeControls: true,
@@ -25,10 +27,11 @@ var GoingBox = React.createClass({
     this.request.abort;
   },
   onGoing: function () {
-    // TODO: Implement an ajax call here.
     var requestAction = this.state.obj.isGoing ? 'delete' : 'go';
     var requestURL = '/places/' + requestAction + '?placeID=' + this.props.placeID;
-    $.getJSON(requestURL, function (data) {
+    $.getJSON(requestURL, {
+      _csrf: $('#_csrf').attr('value')
+    }, function (data) {
       if (data && data.status === 'success') {
         var newState = this.state;
         newState.obj.going += newState.obj.isGoing ? -1 : 1;

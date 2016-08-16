@@ -4,12 +4,15 @@ var rp = require('request-promise');
 var body_parser = require('body-parser');
 var express = require('express');
 var co = require('co');
+var csurf = require('csurf');
+
+var csrfProtection = csurf({});
 
 var root = express.Router();
 root.use(body_parser.json());
 root.use(body_parser.urlencoded({extended: true}));
 
-root.post('/s/', function(req, res) {
+root.post('/s/', csrfProtection, function(req, res) {
   if (!req.session.lastSearch)
     req.session.lastSearch = req.body.keyword;
   else

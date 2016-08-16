@@ -10,6 +10,9 @@ var session_mongoStore = require('connect-mongo')(session);
 var mongo = require('mongodb').MongoClient;
 var co = require('co');
 var pug = require('pug');
+var csurf = require('csurf');
+
+var csrfProtection = csurf({});
 
 var controller_api = require('./controllers/api');
 var controller_places = require('./controllers/places');
@@ -48,7 +51,7 @@ myApp.get('/auth/logout', function(req, res) {
   res.redirect('/');
   res.end();
 });
-myApp.get('/', middleware_mongo, function(req, res) {
+myApp.get('/', middleware_mongo, csrfProtection, function(req, res) {
   if (req.user)
     req.session.user = req.user;
   co(function* () {
@@ -63,7 +66,8 @@ myApp.get('/', middleware_mongo, function(req, res) {
     req.mongo.db.close();
     res.render('index', {
       lastSearch: lastSearch,
-      userName: userName
+      userName: userName,
+      csrfToken: req.csrfToken()
     });
     res.end();
   }).catch(utils.onError);
